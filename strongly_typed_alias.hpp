@@ -243,7 +243,7 @@ template <class TAlias, class TValueType>
 class bool_conversion : public alias_operator<TAlias, TValueType, bool_conversion<TAlias, TValueType>>
 {
 public:
-    constexpr explicit operator bool() noexcept
+    constexpr explicit operator bool() const noexcept
     {
         return this->get_underlying_value(this->to_alias()) != 0;
     }
