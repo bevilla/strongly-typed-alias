@@ -153,12 +153,11 @@ template <class TAlias, class TValueType>
 class addition : public alias_operator<TAlias, TValueType, addition<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator+(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator+(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = addition::get_underlying_value(lhs) + addition::get_underlying_value(rhs);
-        addition::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) + this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -166,12 +165,11 @@ template <class TAlias, class TValueType>
 class bitwise_and : public alias_operator<TAlias, TValueType, bitwise_and<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator&(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator&(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = bitwise_and::get_underlying_value(lhs) & bitwise_and::get_underlying_value(rhs);
-        bitwise_and::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) & this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -179,12 +177,11 @@ template <class TAlias, class TValueType>
 class bitwise_left_shift : public alias_operator<TAlias, TValueType, bitwise_left_shift<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator<<(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator<<(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = bitwise_left_shift::get_underlying_value(lhs) << bitwise_left_shift::get_underlying_value(rhs);
-        bitwise_left_shift::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) << this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -192,10 +189,10 @@ template <class TAlias, class TValueType>
 class bitwise_not : public alias_operator<TAlias, TValueType, bitwise_not<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator~(TAlias alias) noexcept
+    constexpr TAlias operator~() const noexcept
     {
         TAlias other {};
-        bitwise_not::set_underlying_value(other, ~bitwise_not::get_underlying_value(alias));
+        this->set_underlying_value(other, ~this->get_underlying_value(this->to_alias()));
         return other;
     }
 };
@@ -204,12 +201,11 @@ template <class TAlias, class TValueType>
 class bitwise_or : public alias_operator<TAlias, TValueType, bitwise_or<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator|(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator|(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = bitwise_or::get_underlying_value(lhs) | bitwise_or::get_underlying_value(rhs);
-        bitwise_or::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) | this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -217,12 +213,11 @@ template <class TAlias, class TValueType>
 class bitwise_right_shift : public alias_operator<TAlias, TValueType, bitwise_right_shift<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator>>(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator>>(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = bitwise_right_shift::get_underlying_value(lhs) >> bitwise_right_shift::get_underlying_value(rhs);
-        bitwise_right_shift::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) >> this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -230,12 +225,11 @@ template <class TAlias, class TValueType>
 class bitwise_xor : public alias_operator<TAlias, TValueType, bitwise_xor<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator^(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator^(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = bitwise_xor::get_underlying_value(lhs) ^ bitwise_xor::get_underlying_value(rhs);
-        bitwise_xor::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) ^ this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -253,13 +247,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_addition : public alias_operator<TAlias, TValueType, compound_assignment_addition<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator+=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator+=(TAlias other) noexcept
     {
-        compound_assignment_addition::set_underlying_value(
-            lhs,
-            compound_assignment_addition::get_underlying_value(lhs) + compound_assignment_addition::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) + this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -267,13 +262,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_bitwise_and : public alias_operator<TAlias, TValueType, compound_assignment_bitwise_and<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator&=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator&=(TAlias other) noexcept
     {
-        compound_assignment_bitwise_and::set_underlying_value(
-            lhs,
-            compound_assignment_bitwise_and::get_underlying_value(lhs) & compound_assignment_bitwise_and::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) & this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -281,13 +277,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_bitwise_left_shift : public alias_operator<TAlias, TValueType, compound_assignment_bitwise_left_shift<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator<<=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator<<=(TAlias other) noexcept
     {
-        compound_assignment_bitwise_left_shift::set_underlying_value(
-            lhs,
-            compound_assignment_bitwise_left_shift::get_underlying_value(lhs) << compound_assignment_bitwise_left_shift::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) << this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -295,13 +292,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_bitwise_or : public alias_operator<TAlias, TValueType, compound_assignment_bitwise_or<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator|=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator|=(TAlias other) noexcept
     {
-        compound_assignment_bitwise_or::set_underlying_value(
-            lhs,
-            compound_assignment_bitwise_or::get_underlying_value(lhs) | compound_assignment_bitwise_or::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) | this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -309,13 +307,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_bitwise_right_shift : public alias_operator<TAlias, TValueType, compound_assignment_bitwise_right_shift<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator>>=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator>>=(TAlias other) noexcept
     {
-        compound_assignment_bitwise_right_shift::set_underlying_value(
-            lhs,
-            compound_assignment_bitwise_right_shift::get_underlying_value(lhs) >> compound_assignment_bitwise_right_shift::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) >> this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -323,13 +322,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_bitwise_xor : public alias_operator<TAlias, TValueType, compound_assignment_bitwise_xor<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator^=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator^=(TAlias other) noexcept
     {
-        compound_assignment_bitwise_xor::set_underlying_value(
-            lhs,
-            compound_assignment_bitwise_xor::get_underlying_value(lhs) ^ compound_assignment_bitwise_xor::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) ^ this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -337,13 +337,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_division : public alias_operator<TAlias, TValueType, compound_assignment_division<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator/=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator/=(TAlias other) noexcept
     {
-        compound_assignment_division::set_underlying_value(
-            lhs,
-            compound_assignment_division::get_underlying_value(lhs) / compound_assignment_division::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) / this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -351,13 +352,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_multiplication : public alias_operator<TAlias, TValueType, compound_assignment_multiplication<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator*=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator*=(TAlias other) noexcept
     {
-        compound_assignment_multiplication::set_underlying_value(
-            lhs,
-            compound_assignment_multiplication::get_underlying_value(lhs) * compound_assignment_multiplication::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) * this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -365,13 +367,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_remainder : public alias_operator<TAlias, TValueType, compound_assignment_remainder<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator%=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator%=(TAlias other) noexcept
     {
-        compound_assignment_remainder::set_underlying_value(
-            lhs,
-            compound_assignment_remainder::get_underlying_value(lhs) % compound_assignment_remainder::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) % this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -379,13 +382,14 @@ template <class TAlias, class TValueType>
 class compound_assignment_subtraction : public alias_operator<TAlias, TValueType, compound_assignment_subtraction<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias & operator-=(TAlias & lhs, TAlias rhs) noexcept
+    constexpr TAlias & operator-=(TAlias other) noexcept
     {
-        compound_assignment_subtraction::set_underlying_value(
-            lhs,
-            compound_assignment_subtraction::get_underlying_value(lhs) - compound_assignment_subtraction::get_underlying_value(rhs)
+        TAlias & alias = this->to_alias();
+        this->set_underlying_value(
+            alias,
+            this->get_underlying_value(alias) - this->get_underlying_value(other)
         );
-        return lhs;
+        return alias;
     }
 };
 
@@ -405,12 +409,11 @@ template <class TAlias, class TValueType>
 class division : public alias_operator<TAlias, TValueType, division<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator/(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator/(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = division::get_underlying_value(lhs) / division::get_underlying_value(rhs);
-        division::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) / this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -418,9 +421,9 @@ template <class TAlias, class TValueType>
 class equal : public alias_operator<TAlias, TValueType, equal<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator==(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator==(TAlias other) const noexcept
     {
-        return equal::get_underlying_value(lhs) == equal::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) == this->get_underlying_value(other);
     }
 };
 
@@ -438,9 +441,9 @@ template <class TAlias, class TValueType>
 class greater : public alias_operator<TAlias, TValueType, greater<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator>(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator>(TAlias other) const noexcept
     {
-        return greater::get_underlying_value(lhs) > greater::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) > this->get_underlying_value(other);
     }
 };
 
@@ -448,9 +451,9 @@ template <class TAlias, class TValueType>
 class greater_or_equal : public alias_operator<TAlias, TValueType, greater_or_equal<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator>=(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator>=(TAlias other) const noexcept
     {
-        return greater_or_equal::get_underlying_value(lhs) >= greater_or_equal::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) >= this->get_underlying_value(other);
     }
 };
 
@@ -458,9 +461,9 @@ template <class TAlias, class TValueType>
 class less : public alias_operator<TAlias, TValueType, less<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator<(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator<(TAlias other) const noexcept
     {
-        return less::get_underlying_value(lhs) < less::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) < this->get_underlying_value(other);
     }
 };
 
@@ -468,9 +471,9 @@ template <class TAlias, class TValueType>
 class less_or_equal : public alias_operator<TAlias, TValueType, less_or_equal<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator<=(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator<=(TAlias other) const noexcept
     {
-        return less_or_equal::get_underlying_value(lhs) <= less_or_equal::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) <= this->get_underlying_value(other);
     }
 };
 
@@ -478,9 +481,9 @@ template <class TAlias, class TValueType>
 class logical_and : public alias_operator<TAlias, TValueType, logical_and<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator&&(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator&&(TAlias other) const noexcept
     {
-        return logical_and::get_underlying_value(lhs) && logical_and::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) && this->get_underlying_value(other);
     }
 };
 
@@ -488,9 +491,9 @@ template <class TAlias, class TValueType>
 class logical_not : public alias_operator<TAlias, TValueType, logical_not<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator!(TAlias alias) noexcept
+    constexpr bool operator!() const noexcept
     {
-        return !logical_not::get_underlying_value(alias);
+        return !this->get_underlying_value(this->to_alias());
     }
 };
 
@@ -498,9 +501,9 @@ template <class TAlias, class TValueType>
 class logical_or : public alias_operator<TAlias, TValueType, logical_or<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator||(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator||(TAlias other) const noexcept
     {
-        return logical_or::get_underlying_value(lhs) || logical_or::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) || this->get_underlying_value(other);
     }
 };
 
@@ -508,12 +511,11 @@ template <class TAlias, class TValueType>
 class multiplication : public alias_operator<TAlias, TValueType, multiplication<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator*(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator*(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = multiplication::get_underlying_value(lhs) * multiplication::get_underlying_value(rhs);
-        multiplication::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) * this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -526,9 +528,9 @@ template <class TAlias, class TValueType>
 class not_equal : public alias_operator<TAlias, TValueType, not_equal<TAlias, TValueType>>
 {
 public:
-    constexpr friend bool operator!=(TAlias lhs, TAlias rhs) noexcept
+    constexpr bool operator!=(TAlias other) const noexcept
     {
-        return not_equal::get_underlying_value(lhs) != not_equal::get_underlying_value(rhs);
+        return this->get_underlying_value(this->to_alias()) != this->get_underlying_value(other);
     }
 };
 
@@ -626,12 +628,11 @@ template <class TAlias, class TValueType>
 class remainder : public alias_operator<TAlias, TValueType, remainder<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator%(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator%(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = remainder::get_underlying_value(lhs) % remainder::get_underlying_value(rhs);
-        remainder::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) % this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -672,12 +673,11 @@ template <class TAlias, class TValueType>
 class subtraction : public alias_operator<TAlias, TValueType, subtraction<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator-(TAlias lhs, TAlias rhs) noexcept
+    constexpr TAlias operator-(TAlias other) const noexcept
     {
-        TAlias alias {};
-        auto result = subtraction::get_underlying_value(lhs) - subtraction::get_underlying_value(rhs);
-        subtraction::set_underlying_value(alias, result);
-        return alias;
+        TAlias copy = this->to_alias();
+        this->set_underlying_value(copy, this->get_underlying_value(copy) - this->get_underlying_value(other));
+        return copy;
     }
 };
 
@@ -685,10 +685,10 @@ template <class TAlias, class TValueType>
 class unary_minus : public alias_operator<TAlias, TValueType, unary_minus<TAlias, TValueType>>
 {
 public:
-    constexpr friend TAlias operator-(TAlias alias) noexcept
+    constexpr TAlias operator-() const noexcept
     {
         TAlias other {};
-        unary_minus::set_underlying_value(other, -unary_minus::get_underlying_value(alias));
+        unary_minus::set_underlying_value(other, -unary_minus::get_underlying_value(this->to_alias()));
         return other;
     }
 };
